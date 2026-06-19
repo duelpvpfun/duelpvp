@@ -119,19 +119,12 @@ export async function createDuel(
   gameId: BN,
   betLamports: BN,
   winCondition: WinCondition,
-  requiredOpponent: PublicKey | null,
-  joinTimeoutSeconds: number | null = null
+  requiredOpponent: PublicKey | null
 ) {
   const [duel] = deriveDuelPda(gameId, creator, program.programId);
   const [treasury] = deriveTreasuryPda(program.programId);
   await program.methods
-    .createDuel(
-      gameId,
-      betLamports,
-      winCondition,
-      requiredOpponent,
-      joinTimeoutSeconds === null ? null : new BN(joinTimeoutSeconds)
-    )
+    .createDuel(gameId, betLamports, winCondition, requiredOpponent)
     .accounts({ creator, duel, treasury, systemProgram: SystemProgram.programId })
     .rpc();
   return { duel, gameId };

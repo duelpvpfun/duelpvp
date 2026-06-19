@@ -12,13 +12,10 @@ pub mod state;
 use errors::DuelError;
 use state::*;
 
-declare_id!("FpVpkZzyW9tdbXxH9ZUMSe9sghnroDNUkw7uiEgPJ89q");
+declare_id!("8NkYNEeX6eUiNrK89cHfNmZoigaUCdi5NLGKgRFJ77oZ");
 
 pub const HOUSE_FEE_BPS: u64 = 100; // 1.00%
 pub const BPS_DENOMINATOR: u64 = 10_000;
-pub const DEFAULT_JOIN_TIMEOUT: i64 = 600; // 10 min
-pub const MIN_JOIN_TIMEOUT: i64 = 60; // 1 min
-pub const MAX_JOIN_TIMEOUT: i64 = 86_400; // 24 h
 pub const DUEL_EXPIRY_SECONDS: i64 = 86_400; // stuck-VRF refund safety net
 
 #[program]
@@ -82,8 +79,8 @@ pub mod duelpvp {
 
     // ---------------------------------------------------------------------
     // 1) Create a duel (public or private). Creator funds the escrow.
-    //    `join_timeout_seconds` lets the creator pick how long the listing
-    //    stays open before it can be refunded (default 10 min).
+    //    The listing stays open indefinitely until someone joins or the
+    //    creator cancels it (no join timeout).
     // ---------------------------------------------------------------------
     pub fn create_duel(
         ctx: Context<CreateDuel>,
@@ -91,7 +88,6 @@ pub mod duelpvp {
         bet_lamports: u64,
         win_condition: WinCondition,
         required_opponent: Option<Pubkey>,
-        join_timeout_seconds: Option<i64>,
     ) -> Result<()> {
         require!(bet_lamports > 0, DuelError::InvalidBetAmount);
 
@@ -101,9 +97,6 @@ pub mod duelpvp {
             require!(bet_lamports <= t.max_bet_lamports, DuelError::BetTooLarge);
         }
 
-        let timeout = join_timeout_seconds
-            .unwrap_or(DEFAULT_JOIN_TIMEOUT)
-            .clamp(MIN_JOIN_TIMEOUT, MAX_JOIN_TIMEOUT);
         let now = Clock::get()?.unix_timestamp;
 
         let duel = &mut ctx.accounts.duel;
@@ -121,13 +114,8 @@ pub mod duelpvp {
         duel.winner = Pubkey::default();
         duel.is_tie = false;
         duel.created_at = now;
-        duel.join_deadline = now.checked_add(timeout).ok_or(DuelError::MathOverflow)?;
         duel.expiry = now.checked_add(DUEL_EXPIRY_SECONDS).ok_or(DuelError::MathOverflow)?;
         duel.bump = ctx.bumps.duel;
-
-        // Copy the value we need for the event into a local so the `&mut duel`
-        // borrow ends before the transfer CPI and the `emit!` below (E0502).
-        let join_deadline = duel.join_deadline;
 
         anchor_lang::system_program::transfer(
             CpiContext::new(
@@ -145,7 +133,6 @@ pub mod duelpvp {
             creator: ctx.accounts.creator.key(),
             bet_lamports,
             required_opponent,
-            join_deadline,
         });
         Ok(())
     }
@@ -285,8 +272,8 @@ pub mod duelpvp {
     //    swept to the treasury (kept off the hot `settle` path for scale).
     //    - Settled: sweep the 1% fee left in escrow to the treasury; the rent
     //      returns to the creator via `close = creator`.
-    //    - Waiting: creator can reclaim any time; anyone after join_deadline.
-    //      Creator's bet + rent return via `close = creator`.
+    //    - Waiting: only the creator can cancel (no opponent funds at stake),
+    //      any time. Creator's bet + rent return via `close = creator`.
     //    - Rolling: only valid if VRF NEVER fulfilled AND past expiry. Refund
     //      the opponent's bet here; creator's bet + rent leave via
     //      `close = creator`, so both players are made whole. If the VRF IS
@@ -296,9 +283,9 @@ pub mod duelpvp {
         let now = Clock::get()?.unix_timestamp;
         let caller = ctx.accounts.caller.key();
 
-        let (status, bet, opponent_key, join_deadline, expiry, creator, randomness, game_id) = {
+        let (status, bet, opponent_key, expiry, creator, randomness, game_id) = {
             let d = &ctx.accounts.duel;
-            (d.status, d.bet_lamports, d.opponent, d.join_deadline, d.expiry, d.creator, d.randomness, d.game_id)
+            (d.status, d.bet_lamports, d.opponent, d.expiry, d.creator, d.randomness, d.game_id)
         };
 
         let mut refunded = false;
@@ -314,9 +301,10 @@ pub mod duelpvp {
                 move_lamports(&duel_ai, &ctx.accounts.treasury.to_account_info(), fee)?;
             }
             DuelStatus::Waiting => {
-                if caller != creator {
-                    require!(now > join_deadline, DuelError::JoinWindowActive);
-                }
+                // Only the creator can cancel an unmatched duel. No opponent
+                // funds are ever at stake here, so there is no need for a
+                // timeout or a permissionless refund path.
+                require!(caller == creator, DuelError::Unauthorized);
                 refunded = true; // creator bet + rent leave via close = creator
             }
             DuelStatus::Rolling => {
@@ -590,7 +578,6 @@ pub struct DuelCreated {
     pub creator: Pubkey,
     pub bet_lamports: u64,
     pub required_opponent: Option<Pubkey>,
-    pub join_deadline: i64,
 }
 
 #[event]

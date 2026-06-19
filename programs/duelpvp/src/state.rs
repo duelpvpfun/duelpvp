@@ -40,8 +40,7 @@ pub struct Duel {
 
     // timing
     pub created_at: i64,
-    pub join_deadline: i64, // unmatched refund becomes claimable after this
-    pub expiry: i64,        // stuck-VRF refund safety net
+    pub expiry: i64, // stuck-VRF refund safety net
 
     pub bump: u8,
 }

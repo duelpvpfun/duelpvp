@@ -71,7 +71,7 @@ describe("duelpvp", () => {
     const before = await connection.getBalance(creator.publicKey);
 
     await program.methods
-      .createDuel(gameId, new BN(0.1 * LAMPORTS_PER_SOL), { higherWins: {} }, null, null)
+      .createDuel(gameId, new BN(0.1 * LAMPORTS_PER_SOL), { higherWins: {} }, null)
       .accounts({ creator: creator.publicKey, duel, treasury: treasuryPda(), systemProgram: SystemProgram.programId })
       .signers([creator])
       .rpc();
@@ -100,7 +100,7 @@ describe("duelpvp", () => {
     const duel = duelPda(gameId, creator.publicKey);
     try {
       await program.methods
-        .createDuel(gameId, new BN(0.1 * LAMPORTS_PER_SOL), { higherWins: {} }, null, null)
+        .createDuel(gameId, new BN(0.1 * LAMPORTS_PER_SOL), { higherWins: {} }, null)
         .accounts({ creator: creator.publicKey, duel, treasury: treasuryPda(), systemProgram: SystemProgram.programId })
         .signers([creator])
         .rpc();
@@ -117,7 +117,7 @@ describe("duelpvp", () => {
     const duel = duelPda(gameId, creator.publicKey);
     try {
       await program.methods
-        .createDuel(gameId, new BN(0.1 * LAMPORTS_PER_SOL), { higherWins: {} }, null, null)
+        .createDuel(gameId, new BN(0.1 * LAMPORTS_PER_SOL), { higherWins: {} }, null)
         .accounts({ creator: creator.publicKey, duel, treasury: treasuryPda(), systemProgram: SystemProgram.programId })
         .signers([creator])
         .rpc();
@@ -133,7 +133,7 @@ describe("duelpvp", () => {
     const gameId = randomGameId();
     const duel = duelPda(gameId, creator.publicKey);
     await program.methods
-      .createDuel(gameId, new BN(0.1 * LAMPORTS_PER_SOL), { higherWins: {} }, invited.publicKey, null)
+      .createDuel(gameId, new BN(0.1 * LAMPORTS_PER_SOL), { higherWins: {} }, invited.publicKey)
       .accounts({ creator: creator.publicKey, duel, treasury: treasuryPda(), systemProgram: SystemProgram.programId })
       .signers([creator])
       .rpc();

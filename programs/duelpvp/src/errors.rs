@@ -22,8 +22,6 @@ pub enum DuelError {
     RandomnessNotReady,
     #[msg("Randomness already fulfilled; this duel must be settled, not refunded")]
     AlreadyFulfilled,
-    #[msg("The join window has not lapsed yet; only the creator may cancel early")]
-    JoinWindowActive,
     #[msg("Duel has not expired yet")]
     NotExpired,
     #[msg("Duel cannot be closed in its current state")]

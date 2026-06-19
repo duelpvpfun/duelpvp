@@ -6,6 +6,9 @@ skip-lint = false
 [programs.devnet]
 duelpvp = "FpVpkZzyW9tdbXxH9ZUMSe9sghnroDNUkw7uiEgPJ89q"
 
+[programs.mainnet]
+duelpvp = "8NkYNEeX6eUiNrK89cHfNmZoigaUCdi5NLGKgRFJ77oZ"
+
 [programs.localnet]
 duelpvp = "Due1PvP1111111111111111111111111111111111111"
 

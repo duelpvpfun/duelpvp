@@ -43,8 +43,8 @@ engine, so every new game inherits the same provably-fair guarantees.
 | **3. Play & Settle** | A few seconds later the randomness lands. Anyone can trigger `settle` — the contract resolves the match from the verified randomness and **instantly pays the winner**. |
 | **4. Win** | The winner receives the full pot minus a **1% house fee**. A tie refunds both players in full, no fee. |
 
-If nobody joins your match, you get a **full refund** — your SOL never leaves your
-own game vault, and it never touches the house.
+If nobody joins your match, you can **cancel anytime for a full refund** — your
+SOL never leaves your own game vault, and it never touches the house.
 
 ---
 
@@ -158,7 +158,7 @@ duelpvp/
 | `create_duel` | Creator | Open a duel, lock in the bet. |
 | `join_duel` | Opponent | Match the bet + request randomness. |
 | `settle_duel` | Anyone | Resolve the match from VRF, pay the winner. |
-| `close_duel` | Anyone | Refund (no-join / tie / stuck game) and sweep fees. |
+| `close_duel` | Creator / anyone | Cancel-refund an unmatched duel (creator only) or settle-sweep / stuck-game refund. |
 | `initialize_treasury` | Admin | One-time setup of the fee vault. |
 | `set_paused` / `set_max_bet` | Admin | Safety switches. |
 | `withdraw_treasury` | Admin | Collect accumulated fees. |

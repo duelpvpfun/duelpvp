@@ -13,4 +13,8 @@ id.json
 wallet*.json
 *.wallet
 .env
-.env.*
+.env.*!.env.example
+
+# logs / scratch
+*.log
+*.bak

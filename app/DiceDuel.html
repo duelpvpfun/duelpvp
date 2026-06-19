@@ -283,30 +283,17 @@
     stageLobby();
   }
 
-  // ---- [HOOK A] createDuel done -> waiting for an opponent (10-min refund) ----
+  // ---- [HOOK A] createDuel done -> waiting for an opponent (cancel anytime) ----
   function stageLobby() {
-    let remaining = 600; // 10:00
     consoleEl.innerHTML = `
-      <div class="count-ring" id="ring">10:00</div>
-      <div class="console-msg">Waiting for opponent · auto-refund at 0:00</div>
+      <div class="count-ring" id="ring">∞</div>
+      <div class="console-msg">Waiting for opponent · cancel anytime for a full refund</div>
       <button class="btn ghost" id="cancel">Cancel &amp; refund</button>`;
+    // [maps to close_duel — creator-only on the Waiting path, no timeout]
     $("cancel").onclick = () => {
       clearTimers();
       consoleEl.innerHTML = `<div class="console-msg">Duel cancelled · ${BET.toFixed(2)} SOL refunded</div>`;
     };
-    const ring = $("ring");
-    const tick = setInterval(() => {
-      remaining--;
-      const m = Math.floor(remaining / 60), s = remaining % 60;
-      const p = (1 - remaining / 600) * 100;
-      ring.style.setProperty("--p", p.toFixed(1));
-      ring.textContent = `${m}:${String(s).padStart(2, "0")}`;
-      if (remaining <= 0) { // [maps to permissionless close_duel after join_deadline]
-        clearInterval(tick);
-        consoleEl.innerHTML = `<div class="console-msg">No takers · ${BET.toFixed(2)} SOL refunded to you</div>`;
-      }
-    }, 1000);
-    timers.push(tick);
   }
 
   // ---- [HOOK B] DuelJoined event -> 5s countdown while VRF fulfils ----
