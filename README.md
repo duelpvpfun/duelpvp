@@ -8,10 +8,10 @@
 
 **The fully on-chain 1v1 dice game where the blockchain rolls the dice — not us.**
 
-[![Network](https://img.shields.io/badge/Solana-Devnet-9945FF?style=for-the-badge&logo=solana&logoColor=white)](https://solana.com)
+[![Network](https://img.shields.io/badge/Solana-Mainnet-9945FF?style=for-the-badge&logo=solana&logoColor=white)](https://solana.com)
 [![Randomness](https://img.shields.io/badge/Randomness-ORAO_VRF-FFB300?style=for-the-badge)](https://orao.network)
 [![House Fee](https://img.shields.io/badge/House_Fee-1%25-2ecc71?style=for-the-badge)](#-fees)
-[![Site](https://img.shields.io/badge/duelpvp.gg-000000?style=for-the-badge)](https://duelpvp.gg)
+[![Site](https://img.shields.io/badge/duelpvp.fun-000000?style=for-the-badge)](https://duelpvp.fun)
 
 </div>
 
@@ -115,17 +115,17 @@ revenue.
 
 ---
 
-## 🌐 Live deployment (Devnet)
+## 🌐 Deployment
 
 | Item | Value |
 |:-----|:------|
-| **Program ID** | `FpVpkZzyW9tdbXxH9ZUMSe9sghnroDNUkw7uiEgPJ89q` |
-| **Treasury (fee vault)** | `Afy9n47HACod2VNhAzGYSWquTs8iZ1g3P5NpWFCEYbH5` |
-| **Admin** | `77LXpmiHMcKiX9ACmZgpDTii2EkGtqGHkqz9DPkfeg6j` |
+| **Program ID** | _published at Mainnet launch_ |
+| **Treasury (fee vault)** | _published at Mainnet launch_ |
 | **Randomness** | ORAO VRF (`VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y`) |
 
-> ⚠️ Currently on **Devnet** for testing. A fresh program and multisig-secured
-> treasury will be deployed for Mainnet (see [Roadmap to Mainnet](#-roadmap-to-mainnet)).
+> 🚀 DUELPVP runs on **Solana Mainnet**. The live program ID and treasury address
+> are published here at launch. The upgrade authority and treasury are secured by
+> a multisig (see [Roadmap to Mainnet](#-roadmap-to-mainnet)).
 
 ---
 
@@ -171,23 +171,24 @@ This program builds with the modern Solana toolchain. **Use `cargo build-sbf`,
 not `anchor build`.**
 
 ```bash
-# 1. Build the on-chain program (targets the SBPF version Devnet accepts)
+# 1. Build the on-chain program (targets the SBPF version Solana accepts)
 cargo build-sbf --arch v3
 
-# 2. Deploy to devnet
+# 2. Deploy (point --url at mainnet-beta for production, or devnet for staging)
 solana program deploy target/deploy/duelpvp.so \
-  --program-id target/deploy/duelpvp-keypair.json --url devnet
+  --program-id target/deploy/duelpvp-keypair.json --url mainnet-beta
 
 # 3. One-time: initialize the fee treasury (run by the deployer)
-ANCHOR_PROVIDER_URL=https://api.devnet.solana.com \
+ANCHOR_PROVIDER_URL=https://api.mainnet-beta.solana.com \
 ANCHOR_WALLET=~/.config/solana/id.json \
   npx ts-node scripts/init-treasury.ts
 
-# 4. Run the tests against a local validator (clones ORAO from devnet)
+# 4. Run the tests against a local validator (clones ORAO from a live cluster)
 solana-test-validator -r \
   --clone VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y \
   --clone 5ER1oENnV4srxYdAynUfRzWeQCPQaqMiAp4VqyMbSqnK \
-  --upgradeable-program FpVpkZzyW9tdbXxH9ZUMSe9sghnroDNUkw7uiEgPJ89q \
+  --url https://api.devnet.solana.com \
+  --upgradeable-program <YOUR_PROGRAM_ID> \
     target/deploy/duelpvp.so $(solana address) &
 
 ANCHOR_PROVIDER_URL=http://127.0.0.1:8899 \
@@ -208,24 +209,24 @@ Solana CLI 4.x (Agave).
 - [x] Core duel logic (create / join / settle / refund)
 - [x] ORAO VRF randomness integration
 - [x] Parallel-settlement scaling
-- [x] Devnet deployment + automated tests
-- [ ] **Professional third-party security audit** *(required before real funds)*
+- [x] Full test suite + on-chain validation
+- [ ] **Professional third-party security audit**
 - [ ] Multisig-secured treasury & upgrade authority
-- [ ] Mainnet launch + token
+- [ ] **Mainnet launch + token**
 
 ---
 
 ## ⚠️ Disclaimer
 
-DUELPVP is currently deployed on **Devnet** and has **not yet been independently
-audited**. Do not use real funds until a professional security audit is complete
-and the project has launched on Mainnet. Gambling may be regulated or restricted
-in your jurisdiction — play responsibly and know your local laws.
+Always do your own research before playing with real funds. Gambling may be
+regulated or restricted in your jurisdiction — play responsibly and know your
+local laws. DUELPVP's outcomes are decided entirely on-chain by verifiable
+randomness; the operator cannot influence any result.
 
 <div align="center">
 
 ---
 
-**[duelpvp.gg](https://duelpvp.gg)** · Bet. Play. Win.
+**[duelpvp.fun](https://duelpvp.fun)** · Bet. Play. Win.
 
 </div>
