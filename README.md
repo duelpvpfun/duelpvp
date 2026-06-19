@@ -6,7 +6,7 @@
 
 ### Real SOL duels. Real stakes. Real competition.
 
-**The fully on-chain 1v1 dice game where the blockchain rolls the dice — not us.**
+**The fully on-chain 1v1 gaming protocol where the blockchain decides the winner — not us.**
 
 [![Network](https://img.shields.io/badge/Solana-Mainnet-9945FF?style=for-the-badge&logo=solana&logoColor=white)](https://solana.com)
 [![Randomness](https://img.shields.io/badge/Randomness-ORAO_VRF-FFB300?style=for-the-badge)](https://orao.network)
@@ -17,15 +17,19 @@
 
 ---
 
-## 🎲 What is DUELPVP?
+## ⚔️ What is DUELPVP?
 
-DUELPVP is a head-to-head dice duel on Solana. Two players each stake SOL, the
-**smart contract** rolls two dice for each side using verifiable randomness, and
-the winner takes the pot. Simple, fast, and provably fair.
+DUELPVP is a head-to-head **PvP gaming protocol** on Solana. Two players each
+stake SOL, the **smart contract** decides the winner using verifiable
+randomness, and the winner takes the pot. Simple, fast, and provably fair.
 
-> **The golden rule:** the outcome is decided **on-chain** by a cryptographic
-> coin-flip nobody can predict or rig. The website only *animates* a result that
-> the blockchain has already locked in. Not us, not you, not the other player —
+The first game is a **dice duel** — but DUELPVP is built as a platform. Cards,
+coin flips, and other PvP games run on the same trustless escrow + randomness
+engine, so every new game inherits the same provably-fair guarantees.
+
+> **The golden rule:** the outcome is decided **on-chain** by cryptographic
+> randomness nobody can predict or rig. The website only *animates* a result the
+> blockchain has already locked in. Not us, not you, not the other player —
 > **no one** can change who wins.
 
 ---
@@ -34,31 +38,31 @@ the winner takes the pot. Simple, fast, and provably fair.
 
 | Step | What happens |
 |:----:|:-------------|
-| **1. Create** | You pick your bet, your win-condition (**higher** or **lower** total wins), and whether it's public or invite-only. Your SOL goes into a unique vault for *that game only*. |
+| **1. Create** | You pick your bet, the game rules, and whether it's public or invite-only. Your SOL goes into a unique vault for *that match only*. |
 | **2. Join** | An opponent matches your bet. In the **same transaction**, fresh randomness is requested from ORAO VRF — so nobody can see the result before committing. |
-| **3. Roll & Settle** | A few seconds later the randomness lands. Anyone can trigger `settle` — the contract rolls 2 dice per player, compares totals, and **instantly pays the winner**. |
+| **3. Play & Settle** | A few seconds later the randomness lands. Anyone can trigger `settle` — the contract resolves the match from the verified randomness and **instantly pays the winner**. |
 | **4. Win** | The winner receives the full pot minus a **1% house fee**. A tie refunds both players in full, no fee. |
 
-If nobody joins your duel, you get a **full refund** — your SOL never leaves your
+If nobody joins your match, you get a **full refund** — your SOL never leaves your
 own game vault, and it never touches the house.
 
 ---
 
 ## 🛡️ Why it's provably fair
 
-- **The chain rolls the dice, period.** Dice come straight from [ORAO VRF](https://orao.network)
+- **The chain decides, period.** Outcomes come straight from [ORAO VRF](https://orao.network)
   — verifiable randomness produced by a network of oracle nodes and signed
   cryptographically. It's impossible to predict or grind.
 - **No early peeking.** The randomness seed is fresh entropy supplied by the
   *joiner* at join time. Until that transaction lands, the result doesn't exist —
   so neither player can know the outcome before putting money down.
-- **The site is just animation.** When the dice tumble on screen, the result is
+- **The site is just animation.** Whatever plays out on screen, the result is
   *already final on-chain*. The animation is pure theater over a settled fact.
-- **Unbiased dice.** Each face (1–6) is exactly equally likely — we use rejection
-  sampling so there's no statistical edge hiding in the math.
+- **No hidden edge.** Every outcome is drawn from the raw verified randomness with
+  unbiased sampling — no statistical thumb on the scale.
 
 This is the same on-chain-VRF trust model that powers the biggest Solana degen
-games — built here for true 1v1 PvP.
+games — built here as a true 1v1 PvP platform.
 
 ---
 
@@ -153,7 +157,7 @@ duelpvp/
 |:------------|:-------------|:-------------|
 | `create_duel` | Creator | Open a duel, lock in the bet. |
 | `join_duel` | Opponent | Match the bet + request randomness. |
-| `settle_duel` | Anyone | Roll dice, pay the winner. |
+| `settle_duel` | Anyone | Resolve the match from VRF, pay the winner. |
 | `close_duel` | Anyone | Refund (no-join / tie / stuck game) and sweep fees. |
 | `initialize_treasury` | Admin | One-time setup of the fee vault. |
 | `set_paused` / `set_max_bet` | Admin | Safety switches. |
