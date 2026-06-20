@@ -12,8 +12,13 @@ test-ledger
 id.json
 wallet*.json
 *.wallet
+*.key
+*.pem
+secret*
+# any env file (.env, prod.env, test.env, .env.local, etc.) except the template
 .env
 .env.*
+*.env
 !.env.example
 
 # logs / scratch
